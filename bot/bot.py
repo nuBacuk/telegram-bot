@@ -1,3 +1,5 @@
+import os
+import time
 import re
 import requests
 import logging
@@ -11,7 +13,7 @@ try:
     updater = Updater(token=token)
     dispatcher = updater.dispatcher
 except FileNotFoundError:
-    print('Файл с токеном не найден')
+    print('Файл token.cfg содержащий API token не найден')
     exit()
 
 
@@ -37,7 +39,8 @@ def request_message(bot, update):
             if requests.get(f"https://api.github.com/repos/{login[0]}/{login[1]}").status_code == 200:
                 path_file = download(login[0], login[1])
                 bot.send_document(chat_id=update.message.chat_id, document=open(f'{path_file}', 'rb'))
-                response = ''
+                date = time.strftime('%d.%m.%y %H:%M', time.gmtime(os.stat(f'{path_file}').st_mtime))
+                response = f'Архив от {date}'
             else:
                 response = f'Репозиторий {login[1]} не найден'
         else:
