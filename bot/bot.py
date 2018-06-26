@@ -7,7 +7,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 
 try:
-    with open('./token.cfg') as f:
+    with open('%s/token.cfg' % os.path.abspath(os.path.dirname(__file__))) as f:
         token = f.readline().replace('\n', '')
 
     updater = Updater(token=token)
