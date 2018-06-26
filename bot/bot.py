@@ -35,7 +35,7 @@ def request_message(bot, update):
         login = re.split('@', update.message.text)
         if requests.get(f"https://api.github.com/users/{login[0]}").status_code == 200:
             if requests.get(f"https://api.github.com/repos/{login[0]}/{login[1]}").status_code == 200:
-                path_file = f'{login[0]}_{login[1]}.zip'
+                path_file = f'/data/{login[0]}_{login[1]}.zip'
                 try:
                     date = datetime.fromtimestamp(os.stat(f'{path_file}').st_mtime)
                     if (datetime.now() - date).days > 7:
