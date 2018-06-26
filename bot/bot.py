@@ -1,6 +1,5 @@
-import requests
 import re
-import os
+import requests
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 updater = Updater(token='529958462:AAEqo08hxFmbAQ_z5e7sS7NfZuBduC5jyOs')
@@ -14,9 +13,11 @@ def start_command(bot, update):
 
 def download(login, repo):
     response = requests.get(f'https://github.com/{login}/{repo}/archive/master.zip')
+    path_file = f'{login}_{repo}.zip'
     if response.status_code == 200:
-        with open(f'{login}_{repo}.zip', 'wb') as f:
+        with open(path_file, 'wb') as f:
             f.write(response.content)
+    return path_file
 
 
 def request_message(bot, update):
@@ -24,7 +25,8 @@ def request_message(bot, update):
         login = re.split('@', update.message.text)
         if requests.get(f"https://api.github.com/users/{login[0]}").status_code == 200:
             if requests.get(f"https://api.github.com/repos/{login[0]}/{login[1]}").status_code == 200:
-                download(login[0], login[1])
+                path_file = download(login[0], login[1])
+                bot.send_document(chat_id=update.message.chat_id, document=open(f'{path_file}', 'rb'))
             else:
                 response = f'Репозиторий {login[1]} не найден'
         else:
