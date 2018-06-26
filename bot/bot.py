@@ -1,6 +1,6 @@
 import os
-import time
 import re
+from datetime import datetime
 import requests
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
@@ -23,13 +23,11 @@ def start_command(bot, update):
 
 
 # Download repo
-def download(login, repo):
+def download(login, repo, path_file):
     response = requests.get(f'https://github.com/{login}/{repo}/archive/master.zip')
-    path_file = f'{login}_{repo}.zip'
     if response.status_code == 200:
         with open(path_file, 'wb') as f:
             f.write(response.content)
-    return path_file
 
 
 def request_message(bot, update):
@@ -37,10 +35,17 @@ def request_message(bot, update):
         login = re.split('@', update.message.text)
         if requests.get(f"https://api.github.com/users/{login[0]}").status_code == 200:
             if requests.get(f"https://api.github.com/repos/{login[0]}/{login[1]}").status_code == 200:
-                path_file = download(login[0], login[1])
-                bot.send_document(chat_id=update.message.chat_id, document=open(f'{path_file}', 'rb'))
-                date = time.strftime('%d.%m.%y %H:%M', time.gmtime(os.stat(f'{path_file}').st_mtime))
-                response = f'Архив от {date}'
+                path_file = f'{login[0]}_{login[1]}.zip'
+                try:
+                    date = datetime.fromtimestamp(os.stat(f'{path_file}').st_mtime)
+                    if (datetime.now() - date).days > 7:
+                        download(login[0], login[1], path_file)
+                except FileNotFoundError:
+                    download(login[0], login[1], path_file)
+                finally:
+                    date = datetime.fromtimestamp(os.stat(f'{path_file}').st_mtime).strftime('%d.%m.%y %H:%M')
+                    bot.send_document(chat_id=update.message.chat_id, document=open(f'{path_file}', 'rb'))
+                    response = f'Архив от {date}'
             else:
                 response = f'Репозиторий {login[1]} не найден'
         else:
