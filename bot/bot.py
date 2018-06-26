@@ -7,7 +7,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 
 try:
-    with open('token.cfg') as f:
+    with open('./token.cfg') as f:
         token = f.readline().replace('\n', '')
 
     updater = Updater(token=token)
