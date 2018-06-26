@@ -2,8 +2,17 @@ import re
 import requests
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-updater = Updater(token='529958462:AAEqo08hxFmbAQ_z5e7sS7NfZuBduC5jyOs')
-dispatcher = updater.dispatcher
+
+
+try:
+    with open('token.cfg') as f:
+        token = f.readline()
+
+    updater = Updater(token=token)
+    dispatcher = updater.dispatcher
+except FileNotFoundError:
+    print('Файл с токеном не найден')
+    exit()
 
 
 # Command bot
@@ -11,6 +20,7 @@ def start_command(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text='Просто пришли мне логин@репозиторий в таком формате.')
 
 
+# Download repo
 def download(login, repo):
     response = requests.get(f'https://github.com/{login}/{repo}/archive/master.zip')
     path_file = f'{login}_{repo}.zip'
@@ -27,6 +37,7 @@ def request_message(bot, update):
             if requests.get(f"https://api.github.com/repos/{login[0]}/{login[1]}").status_code == 200:
                 path_file = download(login[0], login[1])
                 bot.send_document(chat_id=update.message.chat_id, document=open(f'{path_file}', 'rb'))
+                response = ''
             else:
                 response = f'Репозиторий {login[1]} не найден'
         else:
