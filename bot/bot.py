@@ -67,4 +67,8 @@ text_message_handler = MessageHandler(Filters.text, request_message)
 dispatcher.add_handler(start_command_handler)
 dispatcher.add_handler(text_message_handler)
 updater.start_polling(clean=True)
+
+updater.start_webhook ( listen = ' 0.0.0.0 ' ,
+                       port = 8443)
+
 updater.idle()
