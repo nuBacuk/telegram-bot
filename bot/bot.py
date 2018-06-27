@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import requests
 import logging
@@ -7,13 +8,10 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 
 try:
-    with open('%s/token.cfg' % os.path.abspath(os.path.dirname(__file__))) as f:
-        token = f.readline().replace('\n', '')
-
-    updater = Updater(token=token)
+    updater = Updater(token=sys.argv[1])
     dispatcher = updater.dispatcher
-except FileNotFoundError:
-    print('Файл token.cfg содержащий API token не найден')
+except IndexError:
+    print('Не задан API token')
     exit()
 
 
