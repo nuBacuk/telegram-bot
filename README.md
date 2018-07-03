@@ -1,4 +1,4 @@
-# telegram-bot  ![Image of TravisCI](https://travis-ci.com/nuBacuk/telegram-bot.svg?branch=master)
+# telegram-bot  [![Build Status](https://travis-ci.com/nuBacuk/telegram-bot.svg?branch=master)](https://travis-ci.com/nuBacuk/telegram-bot)
 #### Тестовое задание
 
 Необходимо реализовать бота для Telegram, который будет получать от пользователя логин на github и имя проекта. 
